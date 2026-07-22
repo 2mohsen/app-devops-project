@@ -37,7 +37,7 @@ class BaseUserManager(BUM):
         return user
 
 class BaseUser(BaseModel, AbstractBaseUser, BaseUserManager):
-    email = models.EmailField(_("email address"), blank=True)
+    email = models.EmailField(verbose_name="email address", unique=True)
 
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
