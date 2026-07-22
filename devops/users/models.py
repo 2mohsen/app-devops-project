@@ -51,3 +51,15 @@ class BaseUser(BaseModel, AbstractBaseUser, BaseUserManager):
     
     def is_staff(self):
         return self.is_admin
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)
+    post_count=models.PositiveIntegerField(default=0)
+    subscriber_count=models.PositiveIntegerField(default=0)
+    subscribtion_count=models.PositiveIntegerField(default=0)
+    bio = models.CharField(max_length=1000, null=True, blank=True)
+    
+    
+    def __str__(self):
+        return f"{self.user} >> {self.bio}"
