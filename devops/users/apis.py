@@ -4,16 +4,20 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema
 
-from devops.users.models import BaseUser
+from devops.users.models import BaseUser, Profile
 from django.core.validators import MinLengthValidator
 from .validators import number_validator, letter_validator, special_char_validator
+from devops.api.mixins import ApiAuthMixin
+from devops.users.services import register
+from devops.users.selectors import get_profile
 
 class RegisterAPI(APIView):
     
         
     class InputRegisterSerializer(serializers.Serializer):
-        email = serializers.CharField(max_length=255)
-
+        email = serializers.EmailField(max_length=255)
+        bio = serializers.CharField(max_length=1000, required=False)
+        
         password = serializers.CharField(
             validators=[
                 MinLengthValidator(limit_value=10),
@@ -48,9 +52,11 @@ class RegisterAPI(APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            query = create_user(
+            query = register(
                 email=serializer.validated_data.get("email"),
                 password=serializer.validated_data.get("password"),
+                bio=serializer.validated_data.get("bio"),
+                
                 )
         except Exception as ex:
             return Response(
@@ -60,5 +66,21 @@ class RegisterAPI(APIView):
             
         return Response(self.OutPutRegisterSerializer(query, context={"request":request}).data)
 
+        
+    
+
+
+class ProfileAPI(ApiAuthMixin, APIView):
+        
+    class OutPutSerializer(serializers.ModelSerializer):
+        class Meta:
+            model= Profile
+            fields = ("bio", "post_count", "subscriber_count", "subscription_count")
+    
+    @extend_schema(responses=OutPutSerializer)
+    def get(self, request):
+        query = get_profile(request.user)
+        return Response(self.OutPutSerializer(query, context={"request":request}, many=True).data)
+        
         
     
