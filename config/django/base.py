@@ -15,10 +15,11 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 # Application definition
 LOCAL_APPS = [
     'devops.core.apps.CoreConfig',
-    'devops.users.apps.UsersConfig',
     'devops.common.apps.CommonConfig',
     'devops.authentication.apps.AuthenticationConfig',
     'devops.blog.apps.BlogConfig',
+    'devops.users.apps.UsersConfig',
+    
 ]
 
 THIRD_PARTY_APPS = [
