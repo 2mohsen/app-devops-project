@@ -23,33 +23,34 @@ class RegisterAPI(APIView):
                 MinLengthValidator(limit_value=10),
                 number_validator,
                 letter_validator,
-                special_char_validator
+                special_char_validator,
+                
             ]
         )
         confirm_password = serializers.CharField(max_length=255)
         
     
-    def validate_email(self, email):
-        if BaseUser.objects.filter(email=email):
-            raise serializers.ValidationError("Email Already Taken")
-    
-    def validate(self, data):
-        if not data.get("password") or not data.get("confirm_password"):
-            raise serializers.ValidationError("Please fill password and confirm password")
-        
-        if data.get("password") != data.get("confirm_password"):
-            raise serializers.ValidationError("Confirm password is not equal to password")
+        def validate_email(self, email):
+            if BaseUser.objects.filter(email=email):
+                raise serializers.ValidationError("Email Already Taken")
+            return email
+        def validate(self, data):
+            if not data.get("password") or not data.get("confirm_password"):
+                raise serializers.ValidationError("Please fill password and confirm password")
             
+            if data.get("password") != data.get("confirm_password"):
+                raise serializers.ValidationError("Confirm password is not equal to password")
+            return data
             
     
     class OutPutRegisterSerializer(serializers.ModelSerializer):
         class Meta:
             model= BaseUser
-            fields = ("email")
+            fields = ("email",)
             
     @extend_schema(request=InputRegisterSerializer, responses=OutPutRegisterSerializer)
     def post(self, request):
-        serializer = self.InputSerializer(data=request.data)
+        serializer = self.InputRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
             query = register(
@@ -75,7 +76,7 @@ class ProfileAPI(ApiAuthMixin, APIView):
     class OutPutSerializer(serializers.ModelSerializer):
         class Meta:
             model= Profile
-            fields = ("bio", "post_count", "subscriber_count", "subscription_count")
+            fields = ("bio", "posts_count", "subscriber_count", "subscription_count")
     
     @extend_schema(responses=OutPutSerializer)
     def get(self, request):

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager as BUM
+from django.contrib.auth.models import PermissionsMixin
+
 
 from devops.common.models import BaseModel
 
@@ -11,7 +13,7 @@ class BaseUserManager(BUM):
         if not email:
             raise ValueError("Users must have an email address")
         
-        user = self.model(email=self.normalize_email(email.lower(), is_active=is_active,is_admin=is_admin))
+        user = self.model(email=self.normalize_email(email.lower()), is_active=is_active, is_admin=is_admin)
         
         if password is not None:
             user.set_password(password)
@@ -36,7 +38,7 @@ class BaseUserManager(BUM):
         
         return user
 
-class BaseUser(BaseModel, AbstractBaseUser, BaseUserManager):
+class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name="email address", unique=True)
 
     is_admin = models.BooleanField(default=False)
@@ -55,7 +57,7 @@ class BaseUser(BaseModel, AbstractBaseUser, BaseUserManager):
 
 class Profile(models.Model):
     user = models.OneToOneField(BaseUser, on_delete=models.CASCADE)
-    post_count=models.PositiveIntegerField(default=0)
+    posts_count=models.PositiveIntegerField(default=0)
     subscriber_count=models.PositiveIntegerField(default=0)
     subscription_count=models.PositiveIntegerField(default=0)
     bio = models.CharField(max_length=1000, null=True, blank=True)
