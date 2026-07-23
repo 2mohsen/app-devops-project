@@ -81,7 +81,7 @@ class ProfileAPI(ApiAuthMixin, APIView):
     @extend_schema(responses=OutPutSerializer)
     def get(self, request):
         query = get_profile(request.user)
-        return Response(self.OutPutSerializer(query, context={"request":request}, many=True).data)
+        return Response(self.OutPutSerializer(query, context={"request":request}).data)
         
         
     
