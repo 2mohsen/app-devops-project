@@ -7,11 +7,11 @@ from django.utils.text import slugify
 from django.core.cache import cache
 
 
-def count_follower(*, user: BaseUser) -> int:
+def count_subscribers(*, user: BaseUser) -> int:
     return Subscription.objects.filter(target=user).count()
 
 
-def count_following(*, user: BaseUser) -> int:
+def count_subscriptions(*, user: BaseUser) -> int:
     return Subscription.objects.filter(subscriber=user).count()
 
 def count_posts(*, user: BaseUser) -> int:
@@ -20,8 +20,8 @@ def count_posts(*, user: BaseUser) -> int:
 def cache_profile(*, user: BaseUser) -> None:
     profile = {
             "posts_count": count_posts(user=user),
-            "subscribers_count": count_follower(user=user),
-            "subscriptions_count": count_following(user=user),
+            "subscribers_count": count_subscribers(user=user),
+            "subscriptions_count": count_subscriptions(user=user),
             }
     cache.set(f"profile_{user}", profile, timeout=None)
 
