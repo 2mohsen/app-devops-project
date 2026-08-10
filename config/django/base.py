@@ -19,6 +19,7 @@ LOCAL_APPS = [
     'devops.blog.apps.BlogConfig',
     'devops.users.apps.UsersConfig',
     'devops.authentication.apps.AuthenticationConfig',
+    'devops.tasks.apps.TasksConfig'
     
     
 ]

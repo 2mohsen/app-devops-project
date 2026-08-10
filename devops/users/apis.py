@@ -12,6 +12,7 @@ from devops.users.services import register
 from devops.users.selectors import get_profile
 
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.cache import cache
 
 class RegisterAPI(APIView):
     
@@ -91,6 +92,16 @@ class ProfileAPI(ApiAuthMixin, APIView):
         class Meta:
             model= Profile
             fields = ("bio", "posts_count", "subscriber_count", "subscription_count")
+        
+        def to_representation(self, instance):
+            rep = super().to_representation(instance)
+            cache_profile = cache.get(f"profile_{instance.user}", {})
+            if cache_profile:
+                rep["posts_count"]        = cache_profile.get("posts_count")
+                rep["subscriber_count"]   = cache_profile.get("subscribers_count")
+                rep["subscription_count"] = cache_profile.get("subscriptions_count")
+                
+            return rep
     
     @extend_schema(responses=OutPutSerializer)
     def get(self, request):

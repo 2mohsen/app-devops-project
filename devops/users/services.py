@@ -1,5 +1,6 @@
 from devops.users.models import BaseUser, Profile
 from django.db.transaction import atomic
+from django.core.cache import cache
 
 def create_user(*, email:str, password:str) -> BaseUser:
     return BaseUser.objects.create_user(email=email, password=password)
@@ -13,3 +14,20 @@ def register(bio:str | None, email:str, password:str) -> BaseUser:
     user = create_user(email=email, password=password)
     create_profile(user=user, bio=bio)
     return user 
+
+def profile_count_update():
+    profiles = cache.keys("profile_*")
+
+    for profile_key in profiles:
+        email = profile_key.replace("profile_", "")
+        data = cache.get(profile_key)
+        
+        try:
+            profile = Profile.objects.get(user__email = email)
+            profile.posts_count         = data.get("posts_count")
+            profile.subscriber_count   = data.get("subscribers_count")
+            profile.subscription_count = data.get("subscriptions_count")
+            profile.save()
+        
+        except Exception as ex:
+            print(ex)
