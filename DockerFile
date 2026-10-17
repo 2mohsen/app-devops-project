@@ -6,20 +6,21 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-
+ENV PIP_INDEX_URL=https://package-mirror.liara.ir/repository/pypi/simple
 RUN mkdir -p /app
-RUN groupadd -r appuser 
+RUN groupadd -r appuser
 RUN useradd --no-log-init -r -g appuser appuser
-RUN python -m pip install --upgrade pip 
-RUN mkdir ${APP_HOME} ${APP_HOME}/logs 
+RUN python -m pip install --upgrade pip
+RUN mkdir ${APP_HOME} ${APP_HOME}/logs
 
 WORKDIR ${APP_HOME}
 EXPOSE 8000
 
 
 # Install pip requirements
+COPY ./requirements ./requirements
 COPY requirements.txt .
-COPY --exclude=./docker* --exclude=LICENSE --exclude=.git* --exclude=README.md . ${APP_HOME}
 RUN python -m pip install -r requirements.txt
-RUN pip install ipython==8.2.0 
-RUN pip install gunicorn==20.1.0 
+RUN pip install ipython==8.2.0
+RUN pip install gunicorn==20.1.0
+COPY --exclude=./docker* --exclude=LICENSE --exclude=.git* --exclude=README.md . ${APP_HOME}
