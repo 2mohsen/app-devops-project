@@ -7,10 +7,11 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 
-RUN mkdir -p /app && \
-   groupadd -r appuser && useradd --no-log-init -r -g appuser appuser && \
-    python -m pip install --upgrade pip && \
-    mkdir ${APP_HOME} ${APP_HOME}/logs 
+RUN mkdir -p /app
+RUN groupadd -r appuser 
+RUN useradd --no-log-init -r -g appuser appuser
+RUN python -m pip install --upgrade pip 
+RUN mkdir ${APP_HOME} ${APP_HOME}/logs 
 
 WORKDIR ${APP_HOME}
 EXPOSE 8000
@@ -19,6 +20,6 @@ EXPOSE 8000
 # Install pip requirements
 COPY requirements.txt .
 COPY --exclude=./docker* --exclude=LICENSE --exclude=.git* --exclude=README.md . ${APP_HOME}
-
-
-RUN python -m pip install -r requirements.txt && pip install ipython==8.2.0 && pip install gunicorn==20.1.0 
+RUN python -m pip install -r requirements.txt
+RUN pip install ipython==8.2.0 
+RUN pip install gunicorn==20.1.0 
