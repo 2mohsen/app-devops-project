@@ -6,8 +6,6 @@ from django.contrib.auth.models import PermissionsMixin
 
 from devops.common.models import BaseModel
 
-# Create your models here.
-
 class BaseUserManager(BUM):
     def create_user(self, email, is_active=True, is_admin=False, password=None):
         if not email:
